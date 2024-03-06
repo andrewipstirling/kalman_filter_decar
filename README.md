@@ -103,7 +103,10 @@ $$\mathbf{A}_{k-1} = e^{\mathbf{A}\tau} = \mathbf{1} + \mathbf{A}T + \frac{(\mat
 
 For the $\mathbf{A}$ defined in Equ. 1, we have that $\mathbf{A}^2 = 0$ thus
 
-$$\mathbf{A}_{k-1} = \begin{bmatrix}1 & T \\0 & 1\\ \end{bmatrix}$$
+$$\mathbf{A}_{k-1} =
+\begin{bmatrix}1 & T \\
+0 & 1\\
+\end{bmatrix}$$
 
 Similarly, for $\mathbf{B}_{k-1}$ 
 
