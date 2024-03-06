@@ -90,7 +90,7 @@ x(t) = e^{\mathbf{A}(t-t_0)}\mathbf{x}(t_0) +
 $$
 
 Then through a zero-order hold, assuming the input is constant over
-a time interval, $ T = t_{k}- t_{k-1} $, we have that 
+a time interval, $T = t_{k}- t_{k-1}$, we have that
 
 $$
 \mathbf{x}_k = \underbrace{e^{\mathbf{A}T}}_{\mathbf{A_{k-1}}}\mathbf{x}_{k-1} +
