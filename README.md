@@ -77,17 +77,11 @@ $$
 ### 2.
 Taking the Laplace Transform of Equ. 1, we have that
 
-$$
-\mathbf{x}(s) = (s -\mathbf{1A})^{-1}\mathbf{x}_0 + (s -\mathbf{1A})^{-1}\mathbf{B}a(s) + (s -\mathbf{1A})^{-1}\mathbf{L}w(s) \tag{3}
-$$
+$$\mathbf{x}(s) = (s -\mathbf{1A})^{-1}\mathbf{x}_0 + (s -\mathbf{1A})^{-1}\mathbf{B}a(s) + (s -\mathbf{1A})^{-1}\mathbf{L}w(s) \tag{3}$$
 
 The solution to this is then 
 
-$$
-x(t) = e^{\mathbf{A}(t-t_0)}\mathbf{x}(t_0) + 
-        \int_{t_0}^{t}e^{\mathbf{A}(t-\tau)}\mathbf{B}a(\tau)d\tau +
-        \int_{t_0}^{t}e^{\mathbf{A}(t-\tau)}\mathbf{L}w(\tau)d\tau
-$$
+$$x(t) = e^{\mathbf{A}(t-t_0)}\mathbf{x}(t_0) + \int_{t_0}^{t}e^{\mathbf{A}(t-\tau)}\mathbf{B}a(\tau)d\tau + \int_{t_0}^{t}e^{\mathbf{A}(t-\tau)}\mathbf{L}w(\tau)d\tau$$
 
 Then through a zero-order hold, assuming the input is constant over
 a time interval, $T = t_{k}- t_{k-1}$, we have that
