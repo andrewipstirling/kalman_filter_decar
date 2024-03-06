@@ -1,36 +1,3 @@
-# %% [markdown]
-"""
-## Mass Spring Damper System
-### 1.
-The equation of motion for the mass spring damper system is 
-$$
-m \ddot{r}(t) + c\dot{r}(t) + kr(t) = f(t)
-$$
-We can write this in state space form, dropping the (t) notation for
-brevity, as 
-$$
-\dot{\mathbf{x}} = 
-\begin{bmatrix}
-\dot{x} \\
-\ddot{x}\\
-\end{bmatrix} =
-\begin{bmatrix}
-0 & 1 \\
-\frac{-k}{m} & \frac{-c}{m} \\
-\end{bmatrix}
-\begin{bmatrix}
-x \\
-\dot{x}\\
-\end{bmatrix} + 
-\begin{bmatrix}
-0 \\
-\frac{1}{m}\\
-\end{bmatrix}
-u
-$$
-Where $u = f(t)$ 
-"""
-
 # %%
 import numpy as np
 from scipy import integrate
@@ -65,7 +32,7 @@ class MassSpringDamper:
 
 # %% [markdown]
 """
-No integrating this with a non-zero initial condition of $\mathbf{x} = [5, 0]^T$, 
+Now integrating this with a non-zero initial condition of $\mathbf{x} = [5, 0]^T$, 
 with a system of $m = 1 kg, k = 1 N/m, c = 0.5 Ns/m $, with no external
 force, $f = 0$, we get the following response
 """
