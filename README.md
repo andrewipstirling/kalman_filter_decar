@@ -77,50 +77,54 @@ $$
 ### 2.
 Taking the Laplace Transform of Equ. 1, we have that
 
-$$
+```math
 \mathbf{x}(s) = (s -\mathbf{1A})^{-1}\mathbf{x}_0 + (s -\mathbf{1A})^{-1}\mathbf{B}a(s) + (s -\mathbf{1A})^{-1}\mathbf{L}w(s) \tag{3}
-$$
+```
 
 The solution to this is then
 
-$$
+```math
 x(t) = e^{\mathbf{A}(t-t_0)}\mathbf{x}(t_0) + \int_{t_0}^{t}e^{\mathbf{A}(t-\tau)}\mathbf{B}a(\tau)d\tau +\int_{t_0}^{t}e^{\mathbf{A}(t-\tau)}\mathbf{L}w(\tau)d\tau
-$$
+```
 
 Then through a zero-order hold, assuming the input is constant over
 a time interval, $T = t_{k}- t_{k-1}$, we have that
 
-$$
+```math
 \mathbf{x}_k = \underbrace{e^{\mathbf{A}T}}_{\mathbf{A_{k-1}}}\mathbf{x}_{k-1}+\underbrace{\int_{0}^{T}e^{\mathbf{A}\tau}d\tau \mathbf{B}}_{\mathbf{B}_{k-1}}a_{k-1}+\underbrace{\int_{0}^{T}e^{\mathbf{A}\tau}d\tau \mathbf{L}w_{k-1}}_{\mathbf{w}_{k-1}} \tag{4}
-$$
+```
 
 where $\mathbf{w}_{k-1}$ is defined as
 
-$$
+```math
 \mathbf{w}_{k-1} \sim \mathcal{N}(\mathbf{0},\mathbf{Q}_{k-1}) \tag{5}
-$$
+```
 
 Using Van Loan's Method as detailed in [2,3], we can write
 the process noise $\mathbf{Q}_{k-1}$ as
 
-$$
+```math
 \mathbf{Q}_{k-1} = \int_{0}^{T}e^{\mathbf{A}\tau}\mathbf{Q}e^{\mathbf{A^{\top}}\tau}d\tau = \mathbf{A}_{k-1}(\mathbf{A}_{k-1}^{-1}\mathbf{Q}_{k-1})
-$$
+```
 
 Explicitly calculating $\mathbf{A}_{k-1}$
 
-$$\mathbf{A}_{k-1} = e^{\mathbf{A}\tau} = \mathbf{1} + \mathbf{A}T + \frac{(\mathbf{A}T)^2}{2!} + \ldots$$
+```math
+\mathbf{A}_{k-1} = e^{\mathbf{A}\tau} = \mathbf{1} + \mathbf{A}T + \frac{(\mathbf{A}T)^2}{2!} + \ldots
+```
 
 For the $\mathbf{A}$ defined in Equ. 1, we have that $\mathbf{A}^2 = 0$ thus
 
-$$\mathbf{A}_{k-1} =
+```math
+\mathbf{A}_{k-1} =
 \begin{bmatrix}1 & T \\
 0 & 1\\
-\end{bmatrix}$$
+\end{bmatrix}
+```
 
 Similarly, for $\mathbf{B}_{k-1}$
 
-$$
+```math
 \begin{align*}
 \mathbf{B}_{k-1} &= \int_{0}^{T}e^{\mathbf{A}\tau}d\tau \mathbf{B} \\
 &=  (\int_{0}^{T}\begin{bmatrix}
@@ -141,11 +145,11 @@ T & \frac{1}{2}T^2 \\
 T \\
 \end{bmatrix}
 \end{align*}
-$$
+```
 
 Similarly,
 
-$$
+```math
 \begin{align*}
 \mathbf{w}_{k-1} &= \int_{0}^{T}e^{\mathbf{A}\tau}d\tau \mathbf{L}w_{k-1} \\
 &= \begin{bmatrix}
@@ -153,7 +157,7 @@ $$
 T \\
 \end{bmatrix}w_{k-1}
 \end{align*}
-$$
+``
 
 Finally, the discretized process model can be written as
 
@@ -161,15 +165,15 @@ Finally, the discretized process model can be written as
 \mathbf{x}_k =
 \begin{bmatrix}
 1 & T \\
-0 & 1\\
+0 & 1
 \end{bmatrix}\mathbf{x}_{k-1} +
 \begin{bmatrix}
 \frac{1}{2}T^2 \\
-T \\
+T
 \end{bmatrix}a_{k-1} +
 \begin{bmatrix}
 \frac{1}{2}T^2 \\
-T \\
+T
 \end{bmatrix} w_{k-1}
 ```
 
