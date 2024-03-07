@@ -170,7 +170,7 @@ T \\
 \begin{bmatrix}
 \frac{1}{2}T^2 \\
 T \\
-\end{bmatrix}w_{k-1}
+\end{bmatrix} w_{k-1}
 $$
 
 For the measurement model, the discretized form is equivalent to the continuous one with
@@ -178,5 +178,5 @@ For the measurement model, the discretized form is equivalent to the continuous 
 $$
 y_k = \begin{bmatrix}
 1 & 0
-\end{bmatrix}\mathbf{x}_k + v_k
+\end{bmatrix} \mathbf{x}_k + v_k
 $$
