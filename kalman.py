@@ -344,6 +344,19 @@ T \\
 T \\
 \end{bmatrix}w_{k-1}
 $$
+Then as $u^{\text{acc}}_{k-1} = a_{k-1} + w_{k-1}$, we can rewrite the process
+model as
+$$
+\mathbf{x}_k = 
+\begin{bmatrix}
+1 & T \\
+0 & 1\\
+\end{bmatrix}\mathbf{x}_{k-1} +
+\begin{bmatrix}
+\frac{1}{2}T^2 \\
+T \\
+\end{bmatrix}u^{\text{acc}}_{k-1}
+$$
 For measurement model, the discretized form is much easier to write with 
 $$
 y_k = \begin{bmatrix} 1 & 0 \end{bmatrix}\mathbf{x}_k + v_k
