@@ -1,8 +1,45 @@
 # %%
 import numpy as np
 from scipy import integrate
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+np.random.seed(13)
 
+# %% [markdown]
+"""
+## Mass Spring Damper System
+### 1.
+The equation of motion for the mass spring damper system is
+
+$$
+m \ddot{r}(t) + c\dot{r}(t) + kr(t) = f(t)
+$$
+
+We can write this in state space form, dropping the (t) notation for
+brevity, as 
+
+$$
+\dot{\mathbf{x}} = 
+\begin{bmatrix}
+\dot{x} \\
+\ddot{x}\\
+\end{bmatrix} =
+\begin{bmatrix}
+0 & 1 \\
+\frac{-k}{m} & \frac{-c}{m} \\
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+\dot{x}\\
+\end{bmatrix} + 
+\begin{bmatrix}
+0 \\
+\frac{1}{m}\\
+\end{bmatrix}
+u
+$$
+
+Where $u = f(t)$ 
+"""
 
 # %%
 class MassSpringDamper:
@@ -105,6 +142,8 @@ sol = integrate.solve_ivp(
     method='RK45')
 
 sol_x = sol.y
+
+
 pos = sol_x[0,:]
 vel = sol_x[1,:]
 # Plotting
@@ -151,8 +190,8 @@ def sensor_measurement(t:float,x:np.ndarray,msd:MassSpringDamper):
     # Was integrated with dt = 1e-3
     # For 100 Hz then must take every 10th sample
     for i in range(0,len(t),10):
-        ddot_r_meas = msd.ode(t,x[:,i]) + Q*np.random.randn()
-        accelerometer.append(ddot_r_meas[0])
+        ddot_r_meas = msd.ode(t[i],x[:,i])[1] + Q*np.random.randn()
+        accelerometer.append(ddot_r_meas)
         pos_meas = x[0,i] + R*np.random.randn()
         position.append(pos_meas)
         sensor_time.append(t[i])
@@ -230,12 +269,7 @@ where $\mathbf{w}_{k-1}$ is defined as
 $$
 \mathbf{w}_{k-1} \sim \mathcal{N}(\mathbf{0},\mathbf{Q}_{k-1}) \tag{5}
 $$
-Using Van Loan's Method as detailed in [2,3], we can write
-the process noise $\mathbf{Q}_{k-1}$ as
-$$
-\mathbf{Q}_{k-1} = \int_{0}^{T}e^{\mathbf{A}\tau}\mathbf{Q}e^{\mathbf{A^{\top}}\tau}d\tau
-    = \mathbf{A}_{k-1}(\mathbf{A}_{k-1}^{-1}\mathbf{Q}_{k-1})
-$$
+
 Explicitly calculating $\mathbf{A}_{k-1}$ 
 $$
 \mathbf{A}_{k-1} = e^{\mathbf{A}\tau} = \mathbf{1} + \mathbf{A}T + \frac{(\mathbf{A}T)^2}{2!} + \ldots
@@ -281,7 +315,20 @@ T \\
 \end{bmatrix}w_{k-1}
 \end{align*}
 $$
-Finally, the discretized process model can be written as
+Using Van Loan's Method as detailed in [2,3], we can write
+the process noise $\mathbf{Q}_{k-1}$ as
+$$
+\begin{align*}
+\mathbf{Q}_{k-1} &= \int_{0}^{T}e^{\mathbf{A}\tau}\mathbf{Q}e^{\mathbf{A^{\top}}\tau}d\tau \\
+    &\approx \mathbf{B}_{k-1}\mathbf{B}_{k-1}^{\top}\sigma_a^2 \\
+    &= 
+    \begin{bmatrix}
+    \frac{1}{4}T^4 & \frac{1}{2}T^3 \\
+    \frac{1}{2}T^3 & T^2 \\
+    \end{bmatrix}\sigma_a^2
+\end{align*}
+$$
+The discretized process model can be written as
 $$
 \mathbf{x}_k = 
 \begin{bmatrix}
@@ -304,8 +351,196 @@ $$
 """
 # %%
 class KalmanFilter():
-    def __init__(self,A,B,C,Q,R):
+    def __init__(self,A:np.ndarray,B:np.ndarray,C:np.ndarray,
+                 Q:np.ndarray,R:np.ndarray,x0:np.ndarray, P0:np.ndarray):
         self.A = A
+        self.B = B
+        self.C = C
+        self.Q = Q
+        self.R = R
+        self.P_k = P0
+        self.K_k = None
+        # State
+        self.x = x0
+        # Measurements
+        self.u_acc = None
+        self.y_k = None
+
+    def get_measurement(self, u_acc, y_k):
+        self.u_acc = np.array([[u_acc]])
+        self.y_k = np.array([[y_k]])
+
+    def predict(self) -> np.ndarray:
+        # Insert Prediction step
+        self.x = self.A @ self.x + self.B @ self.u_acc
+        self.P_k = self.A @ self.P_k @ self.A.T + self.Q
+        return self.x
+    
+    def correct(self) -> None:
+        # Insert Correction Step
+        tmp = (self.C @ self.P_k @ self.C.T) + self.R
+        self.K_k = self.P_k @ self.C.T @ np.linalg.inv(tmp)
+        self.x = self.x + self.K_k @ (self.y_k - (self.C @ self.x))
+        self.P_k = (np.eye(self.K_k.shape[0],self.C.shape[1]) - 
+                    (self.K_k @ self.C)) @ self.P_k
+        return
+
+sample_rate = 100
+dt = 1 / sample_rate
+sigma_a = 0.06
+sigma_r = 0.01
+A = np.array([[1, dt],
+              [0, 1]])
+B = np.array([[0.5 * dt**2],
+              [dt]])
+C = np.array([[1, 0]])
+
+Q = (B @ B.T) * sigma_a**2
+
+R = np.array([[sigma_r**2]])
+
+# Set to initial conditions
+# Assuming these are known, with certainty
+x0 = x0.reshape((2,1))
+P0 = np.zeros((2,2))
+
+kalman = KalmanFilter(A,B,C,Q,R,x0,P0)
+
+pos_est = []
+vel_est = []
+sigma_list = []
+
+for i in range(len(pos_data)):
+    y = pos_data[i]
+    u = acc_data[i]
+    kalman.get_measurement(u,y)
+    x_est = kalman.predict()
+    pos_est.append(x_est[0])
+    vel_est.append(x_est[1])
+    sigma = np.sqrt(np.diag(kalman.P_k))
+    sigma_list.append(sigma)
+    kalman.correct()
+
+# Kalman Plots
+fig, ax = plt.subplots(2,1)
+ax[0].set_ylabel(r'Position, $x(t)$, [m]')
+ax[0].set_xlabel(r'$t$ [s]')
+ax[0].plot(t,pos,label="True",color='C1')
+ax[0].plot(time_data,pos_est,label="Predicted",color="C2",linestyle="--")
+ax[0].legend()
+
+ax[1].set_ylabel(r'Velocity, $\dot{x}(t)$, [m/s]')
+ax[1].set_xlabel(r'$t$ [s]')
+ax[1].plot(t,vel,label="True",color='C1')
+ax[1].plot(time_data,vel_est,label="Predicted",color="C2",linestyle="--")
+ax[1].legend()
+
+fig.tight_layout()
+plt.show()
+
+# Error Plots
+pos_error = []
+vel_error = []
+for i in range(0,len(pos),10):
+    pos_error.append(abs(pos_est[i//10] - pos[i]))
+    vel_error.append(abs(vel_est[i//10] - vel[i]))
+
+fig, ax = plt.subplots(2,1)
+sigma_list = np.array(sigma_list)
+print(sigma_list.shape)
+three_sigma_pos = sigma_list[:,0]*3
+three_sigma_vel = sigma_list[:,1]*3
+
+ax[0].set_ylabel(r'Position Error, $x(t)$, [m]')
+ax[0].set_xlabel(r'$t$ [s]')
+ax[0].plot(time_data,pos_error,label="Position Error",color="C2",linestyle="-")
+ax[0].fill_between(time_data,three_sigma_pos,-1*three_sigma_pos,alpha=0.2,label='$\pm 3\sigma$') 
+ax[0].legend()
+
+ax[1].set_ylabel(r'Velocity Error, $\dot{x}(t)$, [m/s]')
+ax[1].set_xlabel(r'$t$ [s]')
+ax[1].plot(time_data,vel_error,label="Velocity Error",color="C2",linestyle="--")
+ax[1].fill_between(time_data,three_sigma_vel,-1*three_sigma_vel,alpha=0.2,label='$\pm 3\sigma$') 
+ax[1].legend()
+
+fig.tight_layout()
+plt.show()
+# %% [markdown]
+"""
+Let's now limit the frequency of the position measurement to 1/10th
+the frequency of the accelerometer. We do this by only taking every 10th
+measurement of the position measurement, using the modulo operator (%). Everytime 
+we receive a position measurement, we can also now correct our kalman prediction
+at these times. 
+"""
+
+kalman = KalmanFilter(A,B,C,Q,R,x0,P0)
+
+pos_est = []
+vel_est = []
+sigma_list = []
+
+for i in range(len(pos_data)):
+    u = acc_data[i]
+    # Only take every 10th measurement
+    if i % 10 == 0:
+        y = pos_data[i]
+        # Used to update the 
+        can_correct = True
+
+    kalman.get_measurement(u,y)
+    x_est = kalman.predict()
+    sigma = np.sqrt(np.diag(kalman.P_k))
+    sigma_list.append(sigma)
+    pos_est.append(x_est[0])
+    vel_est.append(x_est[1])
+    if can_correct:
+        kalman.correct()
+    can_correct = False
+
+# Kalman Plots
+fig, ax = plt.subplots(2,1)
+ax[0].set_ylabel(r'Position, $x(t)$, [m]')
+ax[0].set_xlabel(r'$t$ [s]')
+ax[0].plot(t,pos,label="True",color='C1')
+ax[0].plot(time_data,pos_est,label="Predicted",color="C2",linestyle="--")
+ax[0].legend()
+
+ax[1].set_ylabel(r'Velocity, $\dot{x}(t)$, [m/s]')
+ax[1].set_xlabel(r'$t$ [s]')
+ax[1].plot(t,vel,label="True",color='C1')
+ax[1].plot(time_data,vel_est,label="Predicted",color="C2",linestyle="--")
+ax[1].legend()
+
+fig.tight_layout()
+plt.show()
+
+# Error Plots
+pos_error = []
+vel_error = []
+for i in range(0,len(pos),10):
+    pos_error.append(abs(pos_est[i//10] - pos[i]))
+    vel_error.append(abs(vel_est[i//10] - vel[i]))
+
+fig, ax = plt.subplots(2,1)
+sigma_list = np.array(sigma_list)
+three_sigma_pos = sigma_list[:,0]*3
+three_sigma_vel = sigma_list[:,1]*3
+
+ax[0].set_ylabel(r'Position Error, $x(t)$, [m]')
+ax[0].set_xlabel(r'$t$ [s]')
+ax[0].plot(time_data,pos_error,label="Position Error",color="C2",linestyle="-")
+ax[0].fill_between(time_data,three_sigma_pos,-1*three_sigma_pos,alpha=0.2,label='$\pm 3\sigma$') 
+ax[0].legend()
+
+ax[1].set_ylabel(r'Velocity Error, $\dot{x}(t)$, [m/s]')
+ax[1].set_xlabel(r'$t$ [s]')
+ax[1].plot(time_data,vel_error,label="Velocity Error",color="C2",linestyle="--")
+ax[1].fill_between(time_data,three_sigma_vel,-1*three_sigma_vel,alpha=0.2,label='$\pm 3\sigma$') 
+ax[1].legend()
+
+fig.tight_layout()
+plt.show()
 # %% [markdown]
 """
 ## Bibliography
