@@ -154,7 +154,7 @@ Similarly,
 \mathbf{w}_{k-1} &= \int_{0}^{T}e^{\mathbf{A}\tau}d\tau \mathbf{L}w_{k-1} \\
 &= \begin{bmatrix}
 \frac{1}{2}T^2 \\
-T \\
+T
 \end{bmatrix}w_{k-1}
 \end{align*}
 ```
