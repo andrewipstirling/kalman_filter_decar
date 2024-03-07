@@ -118,7 +118,7 @@ For the $\mathbf{A}$ defined in Equ. 1, we have that $\mathbf{A}^2 = 0$ thus
 ```math
 \mathbf{A}_{k-1} =
 \begin{bmatrix}1 & T \\
-0 & 1\\
+0 & 1
 \end{bmatrix}
 ```
 
@@ -129,20 +129,20 @@ Similarly, for $\mathbf{B}_{k-1}$
 \mathbf{B}_{k-1} &= \int_{0}^{T}e^{\mathbf{A}\tau}d\tau \mathbf{B} \\
 &=  (\int_{0}^{T}\begin{bmatrix}
 1 & \tau \\
-0 & 1\\
+0 & 1
 \end{bmatrix})\mathbf{B} \\
 &= \begin{bmatrix}
 T & \frac{1}{2}T^2 \\
-0 & T\\
+0 & T
 \end{bmatrix}
 \begin{bmatrix}
 0 \\
-1 \\
+1
 \end{bmatrix} \\
 &=
 \begin{bmatrix}
 \frac{1}{2}T^2 \\
-T \\
+T
 \end{bmatrix}
 \end{align*}
 ```
@@ -157,7 +157,7 @@ Similarly,
 T \\
 \end{bmatrix}w_{k-1}
 \end{align*}
-``
+```
 
 Finally, the discretized process model can be written as
 
