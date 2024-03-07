@@ -176,7 +176,7 @@ $$
 For the measurement model, the discretized form is equivalent to the continuous one with
 
 $$
-y_k = \begin{bmatrix} 
-1 & 0 
+y_k = \begin{bmatrix}
+1 & 0
 \end{bmatrix}\mathbf{x}_k + v_k
 $$
