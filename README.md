@@ -157,7 +157,7 @@ $$
 
 Finally, the discretized process model can be written as
 
-$$
+```math
 \mathbf{x}_k =
 \begin{bmatrix}
 1 & T \\
@@ -171,7 +171,7 @@ T \\
 \frac{1}{2}T^2 \\
 T \\
 \end{bmatrix} w_{k-1}
-$$
+```
 
 For the measurement model, the discretized form is equivalent to the continuous one with
 
