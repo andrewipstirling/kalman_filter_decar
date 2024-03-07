@@ -81,10 +81,10 @@ $$
 \mathbf{x}(s) = (s -\mathbf{1A})^{-1}\mathbf{x}_0 + (s -\mathbf{1A})^{-1}\mathbf{B}a(s) + (s -\mathbf{1A})^{-1}\mathbf{L}w(s) \tag{3}
 $$
 
-The solution to this is then 
+The solution to this is then
 
 $$
-x(t) = e^{\mathbf{A}(t-t_0)}\mathbf{x}(t_0) + \int_{t_0}^{t}e^{\mathbf{A}(t-\tau)}\mathbf{B}a(\tau)d\tau + \int_{t_0}^{t}e^{\mathbf{A}(t-\tau)}\mathbf{L}w(\tau)d\tau
+x(t) = e^{\mathbf{A}(t-t_0)}\mathbf{x}(t_0) + \int_{t_0}^{t}e^{\mathbf{A}(t-\tau)}\mathbf{B}a(\tau)d\tau +\int_{t_0}^{t}e^{\mathbf{A}(t-\tau)}\mathbf{L}w(\tau)d\tau
 $$
 
 Then through a zero-order hold, assuming the input is constant over
@@ -107,7 +107,7 @@ $$
 \mathbf{Q}_{k-1} = \int_{0}^{T}e^{\mathbf{A}\tau}\mathbf{Q}e^{\mathbf{A^{\top}}\tau}d\tau = \mathbf{A}_{k-1}(\mathbf{A}_{k-1}^{-1}\mathbf{Q}_{k-1})
 $$
 
-Explicitly calculating $\mathbf{A}_{k-1}$ 
+Explicitly calculating $\mathbf{A}_{k-1}$
 
 $$\mathbf{A}_{k-1} = e^{\mathbf{A}\tau} = \mathbf{1} + \mathbf{A}T + \frac{(\mathbf{A}T)^2}{2!} + \ldots$$
 
@@ -118,7 +118,7 @@ $$\mathbf{A}_{k-1} =
 0 & 1\\
 \end{bmatrix}$$
 
-Similarly, for $\mathbf{B}_{k-1}$ 
+Similarly, for $\mathbf{B}_{k-1}$
 
 $$
 \begin{align*}
@@ -135,7 +135,7 @@ T & \frac{1}{2}T^2 \\
 0 \\
 1 \\
 \end{bmatrix} \\
-&= 
+&=
 \begin{bmatrix}
 \frac{1}{2}T^2 \\
 T \\
@@ -143,7 +143,7 @@ T \\
 \end{align*}
 $$
 
-Similarly, 
+Similarly,
 
 $$
 \begin{align*}
@@ -158,7 +158,7 @@ $$
 Finally, the discretized process model can be written as
 
 $$
-\mathbf{x}_k = 
+\mathbf{x}_k =
 \begin{bmatrix}
 1 & T \\
 0 & 1\\
@@ -166,15 +166,17 @@ $$
 \begin{bmatrix}
 \frac{1}{2}T^2 \\
 T \\
-\end{bmatrix}a_{k-1} + 
+\end{bmatrix}a_{k-1} +
 \begin{bmatrix}
 \frac{1}{2}T^2 \\
 T \\
 \end{bmatrix}w_{k-1}
 $$
 
-For measurement model, the discretized form is equivalent to the continuous one with
+For the measurement model, the discretized form is equivalent to the continuous one with
 
 $$
-y_k = \begin{bmatrix} 1 & 0 \end{bmatrix}\mathbf{x}_k + v_k
+y_k = \begin{bmatrix} 
+1 & 0 
+\end{bmatrix}\mathbf{x}_k + v_k
 $$
